@@ -18,4 +18,5 @@ Imports:
     broom,
     dplyr,
     forcats,
+    purrr,
     rlang

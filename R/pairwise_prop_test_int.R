@@ -8,12 +8,13 @@
 #' @param ... Additional arguments passed on to pairwise.prop.test and prop.test
 #'
 #' @return A tibble listing each pairwise comparison and its corresponding p-value
-#'
-#' @examples
-#' mydf <- tibble(smokers = c(83, 90, 129, 70),
-#'                patients = c(86, 93, 136, 82),
-#'                grouping = LETTERS[1:4])
-#' pairwise_prop_test_int(mydf, smokers, patients, grouping)
+#' @importFrom rlang enquo
+#' @importFrom dplyr summarize
+#' @importFrom dplyr mutate
+#' @importFrom dplyr pull
+#' @importFrom dplyr %>%
+#' @importFrom broom tidy
+#' @importFrom stats pairwise.prop.test
 
 pairwise_prop_test_int <- function(df, x, n, subgroups = NULL, ...) {
   x <- enquo(x)
@@ -27,8 +28,8 @@ pairwise_prop_test_int <- function(df, x, n, subgroups = NULL, ...) {
     df_tested
   } else {
     subgroups <- enquo(subgroups)
+    subgroups <- pull(df, !! subgroups)
 
-    subgroups <- pull(df, !!subgroups)
     mutate(df_tested, group1 = subgroups[group1], group2 = subgroups[group2])
   }
 }

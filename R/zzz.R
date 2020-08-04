@@ -1,0 +1,1 @@
+utils::globalVariables(c("counts", "incidence", "n", "percentage_group1", "percentage_group2", "group1", "group2", "p.value", "n_group1", "n_group2", "mean_group1", "mean_group2", "sd_group1", "sd_group2"))

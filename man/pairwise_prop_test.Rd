@@ -4,7 +4,7 @@
 \alias{pairwise_prop_test}
 \title{Pairwise Proportional Tests}
 \usage{
-pairwise_prop_test(df, x, subgroups, vs_rest = FALSE, ...)
+pairwise_prop_test(df, x, subgroups, ...)
 }
 \arguments{
 \item{df}{A data frame or tibble of raw observations}
@@ -12,8 +12,6 @@ pairwise_prop_test(df, x, subgroups, vs_rest = FALSE, ...)
 \item{x}{Response vector}
 
 \item{subgroups}{Grouping vector}
-
-\item{vs_rest}{Logical - Compare a particular subgroup to the rest of sample?}
 
 \item{...}{Additional arguments passed on to pairwise.prop.test and prop.test}
 }
@@ -24,6 +22,9 @@ A tibble with output from pairwise.prop.test
 A tidy calculation of pairwise proportional comparisons between group levels with corrections for multiple testing
 }
 \examples{
-mydf <- data.frame(smokers = c(rbinom(100, 1, .8), rbinom(70, 1, 0.7), rbinom(50, 1, 0.6)), region = c(rep("A", 100), rep("B", 70), rep("C", 50)))
+mydf <- data.frame(smokers = c(rbinom(100, 1, .8),
+                               rbinom(70, 1, 0.7),
+                               rbinom(50, 1, 0.6)),
+                   region = c(rep("A", 100), rep("B", 70), rep("C", 50)))
 pairwise_prop_test(mydf, smokers, region)
 }

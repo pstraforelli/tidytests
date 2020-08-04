@@ -23,9 +23,3 @@ A tibble listing each pairwise comparison and its corresponding p-value
 \description{
 Internal function to be used in pairwise_prop_test
 }
-\examples{
-mydf <- tibble(smokers = c(83, 90, 129, 70),
-               patients = c(86, 93, 136, 82),
-               grouping = LETTERS[1:4])
-pairwise_prop_test_int(mydf, smokers, patients, grouping)
-}

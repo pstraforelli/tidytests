@@ -7,6 +7,19 @@
 #' @param ... Additional arguments passed on to pairwise.t.test and t.test
 #'
 #' @return A tibble with output from pairwise.t.test
+#' @importFrom rlang enquo
+#' @importFrom rlang quo_name
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarize
+#' @importFrom dplyr n
+#' @importFrom dplyr as_tibble
+#' @importFrom dplyr left_join
+#' @importFrom dplyr transmute
+#' @importFrom dplyr if_else
+#' @importFrom dplyr %>%
+#' @importFrom broom tidy
+#' @importFrom stats pairwise.t.test
+#' @importFrom stats sd
 #' @export
 #'
 #' @examples
@@ -22,9 +35,11 @@ pairwise_t_test <- function(df, x, subgroups, ...) {
               sd = sd(!! x),
               n = n(), .groups = "drop_last")
 
-  as_tibble(summarize(df, tidy(pairwise.t.test(!! x, !! subgroups, ...)))) %>%
-    left_join(summary_df, by = c("group1" = rlang::quo_name(subgroups))) %>%
-    left_join(summary_df, by = c("group2" = rlang::quo_name(subgroups)), suffix = c("_group1", "_group2")) %>%
+  df %>%
+    summarize(tidy(pairwise.t.test(!! x, !! subgroups, ...))) %>%
+    as_tibble() %>%
+    left_join(summary_df, by = c("group1" = quo_name(subgroups))) %>%
+    left_join(summary_df, by = c("group2" = quo_name(subgroups)), suffix = c("_group1", "_group2")) %>%
     transmute(higher_group = if_else(mean_group1 >= mean_group2, group1, group2),
               lower_group = if_else(mean_group1 >= mean_group2, group2, group1),
               p_value = p.value,
