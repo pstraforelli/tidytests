@@ -19,4 +19,6 @@ Imports:
     dplyr,
     forcats,
     purrr,
-    rlang
+    rlang,
+    lifecycle
+RdMacros: lifecycle

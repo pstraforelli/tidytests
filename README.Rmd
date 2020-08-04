@@ -1,0 +1,53 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# tidytests
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+<!-- badges: end -->
+
+The goal of tidytests is to provide a tidy implementation of the output from t-tests and proportional tests.
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` {r eval=FALSE}
+# install.packages("remotes")
+remotes::install_github("pstraforelli/tidytests")
+```
+
+## Example
+
+The package currently consists of two functions, `pairwise_t_test()` and `pairwise_prop_test()`. Both take a raw data frame as input, and the variables to be used for testing.
+
+### `pairwise_t_test()`
+
+```{r example-pairwise-t-test}
+library(tidytests)
+
+pairwise_t_test(iris, Sepal.Length, Species)
+```
+
+### `pairwise_prop_test()`
+
+```{r example-pairwise-prop-test}
+mydf <- data.frame(smokers = c(rbinom(100, 1, .8),
+                               rbinom(70, 1, 0.7),
+                               rbinom(50, 1, 0.6)),
+                   region = c(rep("A", 100), rep("B", 70), rep("C", 50)))
+pairwise_prop_test(mydf, smokers, region)
+```
