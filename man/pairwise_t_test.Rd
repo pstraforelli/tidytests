@@ -4,14 +4,16 @@
 \alias{pairwise_t_test}
 \title{Pairwise T Tests}
 \usage{
-pairwise_t_test(df, x, subgroups, ...)
+pairwise_t_test(df, outcome, subgroups, vs_rest = FALSE, ...)
 }
 \arguments{
-\item{df}{A data frame or tibble}
+\item{df}{A data frame or tibble of raw observations}
 
-\item{x}{Response vector}
+\item{outcome}{Response vector}
 
 \item{subgroups}{Grouping vector}
+
+\item{vs_rest}{Logical indicating whether to test each level of a subgroup to the rest of the data}
 
 \item{...}{Additional arguments passed on to pairwise.t.test and t.test}
 }
@@ -19,7 +21,7 @@ pairwise_t_test(df, x, subgroups, ...)
 A tibble with output from pairwise.t.test
 }
 \description{
-A tidy calculation of pairwise comparisons between group levels with corrections for multiple testing
+A tidy calculation of pairwise comparisons between group levels with corrections for multiple testing#'
 }
 \examples{
 pairwise_t_test(iris, Sepal.Length, Species)

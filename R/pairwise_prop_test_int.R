@@ -1,35 +1,49 @@
-#' Internal function for Pairwise Proportional Tests
-#'
-#' @description Internal function to be used in pairwise_prop_test
-#' @param df A data frame
-#' @param x A vector of "successes"
-#' @param n A vector of "trials"
-#' @param subgroups Optional, a vector of subgroup labels to append to the output
-#' @param ... Additional arguments passed on to pairwise.prop.test and prop.test
-#'
-#' @return A tibble listing each pairwise comparison and its corresponding p-value
 #' @importFrom rlang enquo
-#' @importFrom dplyr summarize
+#' @importFrom rlang :=
+#' @importFrom rlang quo_name
 #' @importFrom dplyr mutate
-#' @importFrom dplyr pull
+#' @importFrom dplyr count
+#' @importFrom dplyr group_by
+#' @importFrom dplyr ungroup
+#' @importFrom dplyr select
+#' @importFrom dplyr filter
+#' @importFrom dplyr group_modify
+#' @importFrom dplyr left_join
+#' @importFrom dplyr transmute
+#' @importFrom dplyr if_else
 #' @importFrom dplyr %>%
-#' @importFrom broom tidy
-#' @importFrom stats pairwise.prop.test
 
-pairwise_prop_test_int <- function(df, x, n, subgroups = NULL, ...) {
+pairwise_prop_test_int <- function(df, x, subgroups, ...) {
   x <- enquo(x)
-  n <- enquo(n)
+  subgroups <- enquo(subgroups)
 
-  df_tested <- df %>%
-    summarize(tidy(pairwise.prop.test(!! x, !! n, ...))) %>%
-    mutate(group1 = as.numeric(group1), group2 = as.numeric(group2))
+  prop_df <- df %>%
+    count(!! subgroups, !! x, name = "counts", .drop = FALSE) %>%
+    group_by(!! subgroups) %>%
+    mutate(percentage = counts / sum(counts),
+           n = sum(counts)) %>%
+    ungroup() %>%
+    select(-counts)
 
-  if (missing(subgroups)) {
-    df_tested
-  } else {
-    subgroups <- enquo(subgroups)
-    subgroups <- pull(df, !! subgroups)
+  output <- df %>%
+    count(!! x, !! subgroups, name = "incidence", .drop = FALSE) %>%
+    group_by(!! subgroups) %>%
+    mutate(n = sum(incidence)) %>%
+    ungroup() %>%
+    filter(n > 0) %>%
+    group_by(!! x) %>%
+    group_modify(~ pairwise_prop_test_zzz(., incidence, n, !! subgroups)) %>%
+    ungroup() %>%
+    left_join(prop_df, by = c("group1" = quo_name(subgroups), quo_name(x))) %>%
+    left_join(prop_df, by = c("group2" = quo_name(subgroups), quo_name(x)), suffix = c("_group1", "_group2")) %>%
+    transmute(!! x,
+              higher_group =if_else(percentage_group1 >= percentage_group2, group1, group2),
+              lower_group = if_else(percentage_group1 >= percentage_group2, group2, group1),
+              p_value = p.value,
+              higher_percentage = if_else(percentage_group1 >= percentage_group2, percentage_group1, percentage_group2),
+              lower_percentage = if_else(percentage_group1 >= percentage_group2, percentage_group2, percentage_group1),
+              higher_n = if_else(percentage_group1 >= percentage_group2, n_group1, n_group2),
+              lower_n = if_else(percentage_group1 >= percentage_group2, n_group2, n_group1))
 
-    mutate(df_tested, group1 = subgroups[group1], group2 = subgroups[group2])
-  }
+  output
 }

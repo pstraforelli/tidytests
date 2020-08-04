@@ -1,52 +1,41 @@
 #' Pairwise T Tests
 #'
-#' @description A tidy calculation of pairwise comparisons between group levels with corrections for multiple testing
-#' @param df A data frame or tibble
-#' @param x Response vector
+#' @description A tidy calculation of pairwise comparisons between group levels with corrections for multiple testing#'
+#' @param df A data frame or tibble of raw observations
+#' @param outcome Response vector
 #' @param subgroups Grouping vector
+#' @param vs_rest Logical indicating whether to test each level of a subgroup to the rest of the data
 #' @param ... Additional arguments passed on to pairwise.t.test and t.test
 #'
 #' @return A tibble with output from pairwise.t.test
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_name
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
-#' @importFrom dplyr n
-#' @importFrom dplyr as_tibble
-#' @importFrom dplyr left_join
-#' @importFrom dplyr transmute
-#' @importFrom dplyr if_else
+#' @importFrom rlang :=
+#' @importFrom dplyr pull
+#' @importFrom dplyr mutate
 #' @importFrom dplyr %>%
-#' @importFrom broom tidy
-#' @importFrom stats pairwise.t.test
-#' @importFrom stats sd
+#' @importFrom forcats fct_other
+#' @importFrom purrr map_dfr
 #' @export
 #'
 #' @examples
 #' pairwise_t_test(iris, Sepal.Length, Species)
 
-pairwise_t_test <- function(df, x, subgroups, ...) {
-  x <- enquo(x)
+pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
+  outcome <- enquo(outcome)
   subgroups <- enquo(subgroups)
+  subgroups_name <- quo_name(subgroups)
 
-  summary_df <- df %>%
-    group_by(!! subgroups) %>%
-    summarize(mean = mean(!! x),
-              sd = sd(!! x),
-              n = n(), .groups = "drop_last")
+  if (vs_rest) {
+    output <- df %>%
+      pull(!! subgroups) %>%
+      levels() %>%
+      map_dfr(function(x) df %>%
+                mutate(!! subgroups_name := fct_other(!! subgroups, keep = x)) %>%
+                pairwise_t_test_int(!! outcome, !! subgroups))
+  } else {
+    output <- pairwise_t_test_int(df, !! outcome, !! subgroups)
+  }
 
-  df %>%
-    summarize(tidy(pairwise.t.test(!! x, !! subgroups, ...))) %>%
-    as_tibble() %>%
-    left_join(summary_df, by = c("group1" = quo_name(subgroups))) %>%
-    left_join(summary_df, by = c("group2" = quo_name(subgroups)), suffix = c("_group1", "_group2")) %>%
-    transmute(higher_group = if_else(mean_group1 >= mean_group2, group1, group2),
-              lower_group = if_else(mean_group1 >= mean_group2, group2, group1),
-              p_value = p.value,
-              higher_mean = if_else(mean_group1 >= mean_group2, mean_group1, mean_group2),
-              lower_mean = if_else(mean_group1 >= mean_group2, mean_group2, mean_group1),
-              higher_sd = if_else(mean_group1 >= mean_group2, sd_group1, sd_group2),
-              lower_sd = if_else(mean_group1 >= mean_group2, sd_group2, sd_group1),
-              higher_n = if_else(mean_group1 >= mean_group2, n_group1, n_group2),
-              lower_n = if_else(mean_group1 >= mean_group2, n_group2, n_group1))
+  output
 }
