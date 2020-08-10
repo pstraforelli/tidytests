@@ -21,7 +21,7 @@ pairwise_t_test(df, outcome, subgroups, vs_rest = FALSE, ...)
 A tibble with output from pairwise.t.test
 }
 \description{
-A tidy calculation of pairwise comparisons between group levels with corrections for multiple testing#'
+A tidy calculation of pairwise comparisons between group levels with corrections for multiple testing
 }
 \examples{
 pairwise_t_test(iris, Sepal.Length, Species)
