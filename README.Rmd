@@ -32,7 +32,7 @@ remotes::install_github("pstraforelli/tidytests")
 
 ## Example
 
-The package currently consists of two functions, `pairwise_t_test()` and `pairwise_prop_test()`. Both take a raw data frame as input, and the variables to be used for testing.
+The package's functions follow an iterative process. First, use either one of two functions, `pairwise_t_test()` and `pairwise_prop_test()`. Both take a raw data frame as input, and the variables to be used for testing.
 
 ### `pairwise_t_test()`
 
@@ -45,9 +45,56 @@ pairwise_t_test(iris, Sepal.Length, Species)
 ### `pairwise_prop_test()`
 
 ```{r example-pairwise-prop-test}
-mydf <- data.frame(smokers = c(rbinom(100, 1, .8),
-                               rbinom(70, 1, 0.7),
-                               rbinom(50, 1, 0.6)),
+set.seed(1) # For reproducibility
+
+mydf <- data.frame(smokers = c(rbinom(100, 1, 0.8),
+                               rbinom(70, 1, 0.6),
+                               rbinom(50, 1, 0.3)),
                    region = c(rep("A", 100), rep("B", 70), rep("C", 50)))
-pairwise_prop_test(mydf, smokers, region)
+test_df <- pairwise_prop_test(mydf, smokers, region)
+test_df
 ```
+
+Then filter out comparisons that you do not want to show if they do not pass a threshold of your choice (such as a p-value of 0.05).
+
+```{r}
+library(dplyr)
+test_df_sig <- test_df %>% 
+  filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
+  select(higher_group, lower_group) # Don't need the rest of the output for the following steps
+```
+
+### `prep_sigmark()`
+
+Use `prep_sigmark()` to combine the summary results of your data frame to the output of `pairwise_*_test()`.
+
+```{r example-prep-sigmark}
+# Creating summary output
+mydf_summ <- mydf %>% 
+  count(smokers, region) %>%
+  filter(smokers == 1) %>%
+  mutate(perc = n / sum(n))
+mydf_summ
+
+# Creating colour vector for upcoming chart
+colour_vec <- c("red", "blue", "green", "orange")
+names(colour_vec) <- LETTERS[1:4]
+
+mydf_prep <- prep_sigmark(mydf_summ, test_df_sig, region, perc, colour_vec, percent = TRUE, vs_rest = FALSE)
+mydf_prep
+```
+
+### `geom_sigmark()`
+
+Use `geom_sigmark()` as a geom object for your ggplot2 chart.
+
+```{r geom-sigmark, warning=FALSE}
+library(ggplot2)
+ggplot(mydf_prep, aes(x = region, y = perc, label = labels, fill = region)) +
+  geom_col() +
+  coord_flip() +
+  geom_sigmark("fill", colour_vec, hjust = 0) +
+  ylim(c(0, 1))
+```
+
+Note that you will see warnings about the encoding of the significance markers. Those can be ignored.
