@@ -25,7 +25,7 @@ Note that the function also includes a \verb{scale_*_manual} function call to en
 Add \code{hjust = 0} for a horizontal bar chart or \code{vjust = 0} for a vertical bar chart.
 }
 \examples{
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 mydf <- data.frame(smokers = c(rbinom(100, 1, .8),
                                rbinom(70, 1, 0.7),

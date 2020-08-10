@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @examples
-#' library(dplyr)
+#' library(dplyr, warn.conflicts = FALSE)
 #' library(ggplot2)
 #' mydf <- data.frame(smokers = c(rbinom(100, 1, .8),
 #'                                rbinom(70, 1, 0.7),

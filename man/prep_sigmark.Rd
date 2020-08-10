@@ -37,7 +37,7 @@ test_res <- pairwise_prop_test(mydf, smokers, region)
 colour_vec <- c("red", "blue", "green", "orange")
 names(colour_vec) <- LETTERS[1:4]
 
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 mydf \%>\%
   count(smokers, region) \%>\%
   filter(smokers == 1) \%>\%

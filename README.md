@@ -71,15 +71,7 @@ Then filter out comparisons that you do not want to show if they do not
 pass a threshold of your choice (such as a p-value of 0.05).
 
 ``` r
-library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
+library(dplyr, warn.conflicts = FALSE)
 test_df_sig <- test_df %>% 
   filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
   select(higher_group, lower_group) # Don't need the rest of the output for the following steps
