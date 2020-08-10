@@ -65,6 +65,21 @@ test_df
 #> 5       1 A            C           2.28e-6            0.83             0.42 
 #> 6       1 B            C           2.13e-2            0.671            0.42 
 #> # ... with 2 more variables: higher_n <int>, lower_n <int>
+
+# Comparing each subgroup vs rest of the sample:
+
+test_df2 <- pairwise_prop_test(mydf, smokers, region, vs_rest = TRUE)
+test_df2
+#> # A tibble: 6 x 8
+#>   smokers higher_group lower_group p_value higher_percenta~ lower_percentage
+#>     <int> <fct>        <fct>         <dbl>            <dbl>            <dbl>
+#> 1       0 Other        A           5.21e-5            0.433            0.17 
+#> 2       0 B            Other       8.65e-1            0.329            0.307
+#> 3       0 C            Other       8.80e-6            0.580            0.235
+#> 4       1 A            Other       5.21e-5            0.83             0.567
+#> 5       1 Other        B           8.65e-1            0.693            0.671
+#> 6       1 Other        C           8.80e-6            0.765            0.42 
+#> # ... with 2 more variables: higher_n <int>, lower_n <int>
 ```
 
 Then filter out comparisons that you do not want to show if they do not
@@ -73,6 +88,10 @@ pass a threshold of your choice (such as a p-value of 0.05).
 ``` r
 library(dplyr, warn.conflicts = FALSE)
 test_df_sig <- test_df %>% 
+  filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
+  select(higher_group, lower_group) # Don't need the rest of the output for the following steps
+
+test_df_sig2 <- test_df2 %>% 
   filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
   select(higher_group, lower_group) # Don't need the rest of the output for the following steps
 ```
@@ -106,6 +125,19 @@ mydf_prep
 #> 1 A      0.550 55%<span style='color:blue'>&#9650;</span><span style='color:gre~
 #> 2 B      0.311 31%<span style='color:green'>&#9650;</span>                      
 #> 3 C      0.139 14%
+
+# With comparisons to rest of sample:
+
+mydf_prep2 <- prep_sigmark(mydf_summ, test_df_sig2, region, perc, colour_vec, percent = TRUE, vs_rest = TRUE)
+mydf_prep2
+#>   smokers region  n      perc         name
+#> 1       1      A 83 0.5496689 higher_group
+#> 2       1      B 47 0.3112583         <NA>
+#> 3       1      C 21 0.1390728  lower_group
+#>                                        labels
+#> 1 55%<span style='color:black'>&#9650;</span>
+#> 2                                         31%
+#> 3 14%<span style='color:black'>&#9660;</span>
 ```
 
 ### `geom_sigmark()`
@@ -122,6 +154,20 @@ ggplot(mydf_prep, aes(x = region, y = perc, label = labels, fill = region)) +
 ```
 
 <img src="man/figures/README-geom-sigmark-1.png" width="100%" />
+
+``` r
+
+# Comparing each subgroup to rest of sample:
+
+ggplot(mydf_prep2, aes(x = region, y = perc, label = labels, fill = region)) +
+  geom_col() +
+  coord_flip() +
+  geom_sigmark(hjust = 0) +
+  scale_fill_manual(values = colour_vec) + 
+  ylim(c(0, 1))
+```
+
+<img src="man/figures/README-geom-sigmark-2.png" width="100%" />
 
 Note that you will see warnings about the encoding of the significance
 markers. Those can be ignored.

@@ -53,6 +53,11 @@ mydf <- data.frame(smokers = c(rbinom(100, 1, 0.8),
                    region = c(rep("A", 100), rep("B", 70), rep("C", 50)))
 test_df <- pairwise_prop_test(mydf, smokers, region)
 test_df
+
+# Comparing each subgroup vs rest of the sample:
+
+test_df2 <- pairwise_prop_test(mydf, smokers, region, vs_rest = TRUE)
+test_df2
 ```
 
 Then filter out comparisons that you do not want to show if they do not pass a threshold of your choice (such as a p-value of 0.05).
@@ -60,6 +65,10 @@ Then filter out comparisons that you do not want to show if they do not pass a t
 ```{r}
 library(dplyr, warn.conflicts = FALSE)
 test_df_sig <- test_df %>% 
+  filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
+  select(higher_group, lower_group) # Don't need the rest of the output for the following steps
+
+test_df_sig2 <- test_df2 %>% 
   filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
   select(higher_group, lower_group) # Don't need the rest of the output for the following steps
 ```
@@ -82,6 +91,11 @@ names(colour_vec) <- LETTERS[1:4]
 
 mydf_prep <- prep_sigmark(mydf_summ, test_df_sig, region, perc, colour_vec, percent = TRUE, vs_rest = FALSE)
 mydf_prep
+
+# With comparisons to rest of sample:
+
+mydf_prep2 <- prep_sigmark(mydf_summ, test_df_sig2, region, perc, colour_vec, percent = TRUE, vs_rest = TRUE)
+mydf_prep2
 ```
 
 ### `geom_sigmark()`
@@ -94,6 +108,15 @@ ggplot(mydf_prep, aes(x = region, y = perc, label = labels, fill = region)) +
   geom_col() +
   coord_flip() +
   geom_sigmark("fill", colour_vec, hjust = 0) +
+  ylim(c(0, 1))
+
+# Comparing each subgroup to rest of sample:
+
+ggplot(mydf_prep2, aes(x = region, y = perc, label = labels, fill = region)) +
+  geom_col() +
+  coord_flip() +
+  geom_sigmark(hjust = 0) +
+  scale_fill_manual(values = colour_vec) + 
   ylim(c(0, 1))
 ```
 
