@@ -26,6 +26,8 @@ pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
   subgroups <- enquo(subgroups)
   subgroups_name <- quo_name(subgroups)
 
+  df <- mutate(df, !! subgroups := fct_drop(!! subgroups))
+
   if (vs_rest) {
     output <- df %>%
       pull(!! subgroups) %>%
