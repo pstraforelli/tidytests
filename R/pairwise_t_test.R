@@ -15,6 +15,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr %>%
 #' @importFrom forcats fct_other
+#' @importFrom forcats fct_drop
 #' @importFrom purrr map_dfr
 #' @export
 #'
