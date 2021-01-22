@@ -37,7 +37,7 @@ library(tidytests)
 pairwise_t_test(iris, Sepal.Length, Species)
 #> # A tibble: 3 x 9
 #>   higher_group lower_group  p_value higher_mean lower_mean higher_sd lower_sd
-#>   <chr>        <chr>          <dbl>       <dbl>      <dbl>     <dbl>    <dbl>
+#>   <fct>        <fct>          <dbl>       <dbl>      <dbl>     <dbl>    <dbl>
 #> 1 versicolor   setosa      1.75e-15        5.94       5.01     0.516    0.352
 #> 2 virginica    setosa      6.64e-32        6.59       5.01     0.636    0.352
 #> 3 virginica    versicolor  2.77e- 9        6.59       5.94     0.636    0.516
@@ -67,7 +67,6 @@ test_df
 #> # ... with 2 more variables: higher_n <int>, lower_n <int>
 
 # Comparing each subgroup vs rest of the sample:
-
 test_df2 <- pairwise_prop_test(mydf, smokers, region, vs_rest = TRUE)
 test_df2
 #> # A tibble: 6 x 8
@@ -127,7 +126,6 @@ mydf_prep
 #> 3 C      0.139 14%
 
 # With comparisons to rest of sample:
-
 mydf_prep2 <- prep_sigmark(mydf_summ, test_df_sig2, region, perc, colour_vec, percent = TRUE, vs_rest = TRUE)
 mydf_prep2
 #>   smokers region  n      perc         name
@@ -156,9 +154,7 @@ ggplot(mydf_prep, aes(x = region, y = perc, label = labels, fill = region)) +
 <img src="man/figures/README-geom-sigmark-1.png" width="100%" />
 
 ``` r
-
 # Comparing each subgroup to rest of sample:
-
 ggplot(mydf_prep2, aes(x = region, y = perc, label = labels, fill = region)) +
   geom_col() +
   coord_flip() +
