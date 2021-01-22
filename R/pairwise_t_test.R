@@ -11,6 +11,7 @@
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_name
 #' @importFrom rlang :=
+#' @importFrom rlang abort
 #' @importFrom dplyr pull
 #' @importFrom dplyr mutate
 #' @importFrom dplyr %>%
@@ -28,6 +29,14 @@ pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
   subgroups_name <- quo_name(subgroups)
 
   df <- mutate(df, !! subgroups := fct_drop(!! subgroups))
+
+  levels_check <- df %>%
+    pull(!! subgroups) %>%
+    nlevels()
+
+  if (levels_check <= 1) {
+    abort("Only one subgroup has data. Significance testing cannot be run.")
+  }
 
   if (vs_rest) {
     output <- df %>%

@@ -35,6 +35,14 @@ pairwise_prop_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
 
   df <- mutate(df, !! subgroups := fct_drop(!! subgroups))
 
+  levels_check <- df %>%
+    pull(!! subgroups) %>%
+    nlevels()
+
+  if (levels_check <= 1) {
+    abort("Only one subgroup has data. Significance testing cannot be run.")
+  }
+
   if (vs_rest) {
     output <- df %>%
       pull(!! subgroups) %>%
