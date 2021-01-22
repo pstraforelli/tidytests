@@ -16,6 +16,10 @@ pairwise_t_test_int <- function(df, x, subgroups, ...) {
   x <- enquo(x)
   subgroups <- enquo(subgroups)
 
+  levels_subgroups <- df %>%
+    pull(!! subgroups) %>%
+    levels()
+
   summary_df <- df %>%
     group_by(!! subgroups) %>%
     summarize(mean = mean(!! x),
@@ -35,5 +39,7 @@ pairwise_t_test_int <- function(df, x, subgroups, ...) {
               higher_sd = if_else(mean_group1 >= mean_group2, sd_group1, sd_group2),
               lower_sd = if_else(mean_group1 >= mean_group2, sd_group2, sd_group1),
               higher_n = if_else(mean_group1 >= mean_group2, n_group1, n_group2),
-              lower_n = if_else(mean_group1 >= mean_group2, n_group2, n_group1))
+              lower_n = if_else(mean_group1 >= mean_group2, n_group2, n_group1)) %>%
+    mutate(higher_group = factor(higher_group, levels = levels_subgroups),
+           lower_group = factor(lower_group, levels = levels_subgroups))
 }

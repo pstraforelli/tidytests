@@ -21,7 +21,7 @@
 #' @export
 #'
 #' @examples
-#' mydf <- data.frame(smokers = c(rbinom(100, 1, .8),
+#' mydf <- data.frame(smokers = c(rbinom(100, 1, 0.8),
 #'                                rbinom(70, 1, 0.7),
 #'                                rbinom(50, 1, 0.6)),
 #'                    region = c(rep("A", 100), rep("B", 70), rep("C", 50)))

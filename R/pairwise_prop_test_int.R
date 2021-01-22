@@ -37,7 +37,7 @@ pairwise_prop_test_int <- function(df, x, subgroups, ...) {
     left_join(prop_df, by = c("group1" = quo_name(subgroups), quo_name(x))) %>%
     left_join(prop_df, by = c("group2" = quo_name(subgroups), quo_name(x)), suffix = c("_group1", "_group2")) %>%
     transmute(!! x,
-              higher_group =if_else(percentage_group1 >= percentage_group2, group1, group2),
+              higher_group = if_else(percentage_group1 >= percentage_group2, group1, group2),
               lower_group = if_else(percentage_group1 >= percentage_group2, group2, group1),
               p_value = p.value,
               higher_percentage = if_else(percentage_group1 >= percentage_group2, percentage_group1, percentage_group2),
