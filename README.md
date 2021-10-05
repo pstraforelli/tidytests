@@ -56,28 +56,28 @@ mydf <- data.frame(smokers = c(rbinom(100, 1, 0.8),
 test_df <- pairwise_prop_test(mydf, smokers, region)
 test_df
 #> # A tibble: 6 x 8
-#>   smokers higher_group lower_group p_value higher_percenta~ lower_percentage
-#>     <int> <fct>        <fct>         <dbl>            <dbl>            <dbl>
-#> 1       0 B            A           2.68e-2            0.329            0.17 
-#> 2       0 C            A           2.28e-6            0.580            0.17 
-#> 3       0 C            B           2.13e-2            0.580            0.329
-#> 4       1 A            B           2.68e-2            0.83             0.671
-#> 5       1 A            C           2.28e-6            0.83             0.42 
-#> 6       1 B            C           2.13e-2            0.671            0.42 
+#>   smokers higher_group lower_group    p_value higher_percentage lower_percentage
+#>     <int> <fct>        <fct>            <dbl>             <dbl>            <dbl>
+#> 1       0 B            A           0.0268                 0.329            0.17 
+#> 2       0 C            A           0.00000228             0.58             0.17 
+#> 3       0 C            B           0.0213                 0.58             0.329
+#> 4       1 A            B           0.0268                 0.83             0.671
+#> 5       1 A            C           0.00000228             0.83             0.42 
+#> 6       1 B            C           0.0213                 0.671            0.42 
 #> # ... with 2 more variables: higher_n <int>, lower_n <int>
 
 # Comparing each subgroup vs rest of the sample:
 test_df2 <- pairwise_prop_test(mydf, smokers, region, vs_rest = TRUE)
 test_df2
 #> # A tibble: 6 x 8
-#>   smokers higher_group lower_group p_value higher_percenta~ lower_percentage
-#>     <int> <fct>        <fct>         <dbl>            <dbl>            <dbl>
-#> 1       0 Other        A           5.21e-5            0.433            0.17 
-#> 2       0 B            Other       8.65e-1            0.329            0.307
-#> 3       0 C            Other       8.80e-6            0.580            0.235
-#> 4       1 A            Other       5.21e-5            0.83             0.567
-#> 5       1 Other        B           8.65e-1            0.693            0.671
-#> 6       1 Other        C           8.80e-6            0.765            0.42 
+#>   smokers higher_group lower_group    p_value higher_percentage lower_percentage
+#>     <int> <fct>        <fct>            <dbl>             <dbl>            <dbl>
+#> 1       0 Other        A           0.0000521              0.433            0.17 
+#> 2       0 B            Other       0.865                  0.329            0.307
+#> 3       0 C            Other       0.00000880             0.58             0.235
+#> 4       1 A            Other       0.0000521              0.83             0.567
+#> 5       1 Other        B           0.865                  0.693            0.671
+#> 6       1 Other        C           0.00000880             0.765            0.42 
 #> # ... with 2 more variables: higher_n <int>, lower_n <int>
 ```
 
@@ -86,12 +86,12 @@ pass a threshold of your choice (such as a p-value of 0.05).
 
 ``` r
 library(dplyr, warn.conflicts = FALSE)
-test_df_sig <- test_df %>% 
-  filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
+test_df_sig <- test_df |> 
+  filter(p_value < 0.05, smokers == 1) |> # Only interested in the % among smokers
   select(higher_group, lower_group) # Don't need the rest of the output for the following steps
 
-test_df_sig2 <- test_df2 %>% 
-  filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
+test_df_sig2 <- test_df2 |> 
+  filter(p_value < 0.05, smokers == 1) |> # Only interested in the % among smokers
   select(higher_group, lower_group) # Don't need the rest of the output for the following steps
 ```
 
@@ -102,9 +102,9 @@ to the output of `pairwise_*_test()`.
 
 ``` r
 # Creating summary output
-mydf_summ <- mydf %>% 
-  count(smokers, region) %>%
-  filter(smokers == 1) %>%
+mydf_summ <- mydf |> 
+  count(smokers, region) |>
+  filter(smokers == 1) |>
   mutate(perc = n / sum(n))
 mydf_summ
 #>   smokers region  n      perc
@@ -113,8 +113,8 @@ mydf_summ
 #> 3       1      C 21 0.1390728
 
 # Creating colour vector for upcoming chart
-colour_vec <- c("red", "blue", "green", "orange")
-names(colour_vec) <- LETTERS[1:4]
+colour_vec <- c("red", "blue", "green")
+names(colour_vec) <- LETTERS[1:3]
 
 mydf_prep <- prep_sigmark(mydf_summ, test_df_sig, region, perc, colour_vec, percent = TRUE, vs_rest = FALSE)
 mydf_prep

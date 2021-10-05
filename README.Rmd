@@ -63,12 +63,12 @@ Then filter out comparisons that you do not want to show if they do not pass a t
 
 ```{r}
 library(dplyr, warn.conflicts = FALSE)
-test_df_sig <- test_df %>% 
-  filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
+test_df_sig <- test_df |> 
+  filter(p_value < 0.05, smokers == 1) |> # Only interested in the % among smokers
   select(higher_group, lower_group) # Don't need the rest of the output for the following steps
 
-test_df_sig2 <- test_df2 %>% 
-  filter(p_value < 0.05, smokers == 1) %>% # Only interested in the % among smokers
+test_df_sig2 <- test_df2 |> 
+  filter(p_value < 0.05, smokers == 1) |> # Only interested in the % among smokers
   select(higher_group, lower_group) # Don't need the rest of the output for the following steps
 ```
 
@@ -78,15 +78,15 @@ Use `prep_sigmark()` to combine the summary results of your data frame to the ou
 
 ```{r example-prep-sigmark}
 # Creating summary output
-mydf_summ <- mydf %>% 
-  count(smokers, region) %>%
-  filter(smokers == 1) %>%
+mydf_summ <- mydf |> 
+  count(smokers, region) |>
+  filter(smokers == 1) |>
   mutate(perc = n / sum(n))
 mydf_summ
 
 # Creating colour vector for upcoming chart
-colour_vec <- c("red", "blue", "green", "orange")
-names(colour_vec) <- LETTERS[1:4]
+colour_vec <- c("red", "blue", "green")
+names(colour_vec) <- LETTERS[1:3]
 
 mydf_prep <- prep_sigmark(mydf_summ, test_df_sig, region, perc, colour_vec, percent = TRUE, vs_rest = FALSE)
 mydf_prep
