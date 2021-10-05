@@ -20,7 +20,6 @@
 #' @importFrom dplyr summarize
 #' @importFrom dplyr case_when
 #' @importFrom dplyr if_else
-#' @importFrom dplyr %>%
 #' @importFrom glue as_glue
 #' @importFrom glue glue
 #' @importFrom glue glue_collapse
@@ -40,10 +39,10 @@
 #' names(colour_vec) <- LETTERS[1:4]
 #'
 #' library(dplyr, warn.conflicts = FALSE)
-#' mydf %>%
-#'   count(smokers, region) %>%
-#'   filter(smokers == 1) %>%
-#'   mutate(perc = n / sum(n)) %>%
+#' mydf |>
+#'   count(smokers, region) |>
+#'   filter(smokers == 1) |>
+#'   mutate(perc = n / sum(n)) |>
 #'   prep_sigmark(test_res, region, perc, colour_vec, percent = TRUE, vs_rest = FALSE)
 
 prep_sigmark <- function(df, test_df, subgroups, result, colours = NULL, percent, vs_rest) {
@@ -54,8 +53,8 @@ prep_sigmark <- function(df, test_df, subgroups, result, colours = NULL, percent
     key <- "value"
     names(key) <- as_name(subgroups_en)
 
-    output <- df %>%
-      left_join(test_df, by = key) %>%
+    output <- df |>
+      left_join(test_df, by = key) |>
       mutate(labels = case_when(
         name == "higher_group" ~ glue("<span style='color:black'>&#9650;</span>"),
         name == "lower_group" ~ glue("<span style='color:black'>&#9660;</span>"),
@@ -64,21 +63,20 @@ prep_sigmark <- function(df, test_df, subgroups, result, colours = NULL, percent
     key <- "higher_group"
     names(key) <- as_name(subgroups_en)
 
-    output <- df %>%
-      left_join(test_df, by = key) %>%
-      left_join(enframe(colours), by = c("lower_group" = "name")) %>%
-      mutate(labels = if_else(is.na(lower_group), as_glue(NA_character_), glue("<span style='color:{value}'>&#9650;</span>"))) %>%
-      group_by(!! subgroups_en) %>%
+    output <- df |>
+      left_join(test_df, by = key) |>
+      left_join(enframe(colours), by = c("lower_group" = "name")) |>
+      mutate(labels = if_else(is.na(lower_group), as_glue(NA_character_), glue("<span style='color:{value}'>&#9650;</span>"))) |>
+      group_by(!! subgroups_en) |>
       summarize("{{ result }}" := mean({{ result }}), labels = glue_collapse(labels), .groups = "drop_last")
   }
 
   if (percent) {
-    output <- output %>%
+    output |>
       mutate(temp = percent({{ result }}, accuracy = 1),
-             labels = ifelse(is.na(labels), temp, str_c(temp, labels))) %>%
+             labels = ifelse(is.na(labels), temp, str_c(temp, labels))) |>
       select(-temp)
   } else {
-    output <- mutate(output, labels = ifelse(is.na(labels), {{ result }}, str_c({{ result }}, labels)))
+    mutate(output, labels = ifelse(is.na(labels), {{ result }}, str_c({{ result }}, labels)))
   }
-  output
 }

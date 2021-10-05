@@ -14,7 +14,6 @@
 #' @importFrom rlang abort
 #' @importFrom dplyr pull
 #' @importFrom dplyr mutate
-#' @importFrom dplyr %>%
 #' @importFrom forcats fct_other
 #' @importFrom forcats fct_drop
 #' @importFrom purrr map_dfr
@@ -30,8 +29,8 @@ pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
 
   df <- mutate(df, !! subgroups := fct_drop(!! subgroups))
 
-  levels_check <- df %>%
-    pull(!! subgroups) %>%
+  levels_check <- df |>
+    pull(!! subgroups) |>
     nlevels()
 
   if (levels_check <= 1) {
@@ -39,15 +38,13 @@ pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
   }
 
   if (vs_rest) {
-    output <- df %>%
-      pull(!! subgroups) %>%
-      levels() %>%
-      map_dfr(function(x) df %>%
-                mutate(!! subgroups_name := fct_other(!! subgroups, keep = x)) %>%
+    df |>
+      pull(!! subgroups) |>
+      levels() |>
+      map_dfr(function(x) df |>
+                mutate(!! subgroups_name := fct_other(!! subgroups, keep = x)) |>
                 pairwise_t_test_int(!! outcome, !! subgroups))
   } else {
-    output <- pairwise_t_test_int(df, !! outcome, !! subgroups)
+    pairwise_t_test_int(df, !! outcome, !! subgroups)
   }
-
-  output
 }

@@ -38,9 +38,9 @@ colour_vec <- c("red", "blue", "green", "orange")
 names(colour_vec) <- LETTERS[1:4]
 
 library(dplyr, warn.conflicts = FALSE)
-mydf \%>\%
-  count(smokers, region) \%>\%
-  filter(smokers == 1) \%>\%
-  mutate(perc = n / sum(n)) \%>\%
+mydf |>
+  count(smokers, region) |>
+  filter(smokers == 1) |>
+  mutate(perc = n / sum(n)) |>
   prep_sigmark(test_res, region, perc, colour_vec, percent = TRUE, vs_rest = FALSE)
 }
