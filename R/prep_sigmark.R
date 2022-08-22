@@ -40,8 +40,8 @@
 prep_sigmark <- function(df, test_df, subgroups, result, colours = NULL, percent, vs_rest) {
   subgroups_en <- enquo(subgroups)
 
-  if (is.numeric(df[[subgroups]])) {
-    df[[subgroups]] <- df[[subgroups]] |>
+  if (!is.factor(df[[as_name(subgroups_en)]])) {
+    df[[as_name(subgroups_en)]] <- df[[as_name(subgroups_en)]] |>
       as.character() |>
       fct_inorder()
   }
