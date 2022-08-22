@@ -10,22 +10,14 @@
 #' @param vs_rest A logical indicating whether the vs_rest argument in `pairwise_*_test()` was set to TRUE or FALSE.
 #'
 #' @return A tibble ready for ggplot2 chart with a `geom_sigmark()` layer.
-#' @importFrom rlang enquo
-#' @importFrom rlang as_name
+#' @import rlang
+#' @import dplyr
+#' @import glue
 #' @importFrom tidyr pivot_longer
-#' @importFrom dplyr everything
-#' @importFrom dplyr left_join
-#' @importFrom dplyr mutate
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
-#' @importFrom dplyr case_when
-#' @importFrom dplyr if_else
-#' @importFrom glue as_glue
-#' @importFrom glue glue
-#' @importFrom glue glue_collapse
 #' @importFrom tibble enframe
 #' @importFrom scales percent
 #' @importFrom stringr str_c
+#' @importFrom forcats fct_inorder
 #' @export
 #'
 #' @examples
@@ -47,6 +39,12 @@
 
 prep_sigmark <- function(df, test_df, subgroups, result, colours = NULL, percent, vs_rest) {
   subgroups_en <- enquo(subgroups)
+
+  if (is.numeric(df[[subgroups]])) {
+    df[[subgroups]] <- df[[subgroups]] |>
+      as.character() |>
+      fct_inorder()
+  }
 
   if (vs_rest) {
     test_df <- pivot_longer(test_df, everything())
