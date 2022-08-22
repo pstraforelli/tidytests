@@ -16,6 +16,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom forcats fct_other
 #' @importFrom forcats fct_drop
+#' @importFrom forcats fct_inorder
 #' @importFrom purrr map_dfr
 #' @export
 #'
@@ -26,6 +27,12 @@ pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
   outcome <- enquo(outcome)
   subgroups <- enquo(subgroups)
   subgroups_name <- quo_name(subgroups)
+
+  if (!is.factor(df[[as_name(subgroups)]])) {
+    df[[as_name(subgroups)]] <- df[[as_name(subgroups)]] |>
+      as.character() |>
+      fct_inorder()
+  }
 
   df <- mutate(df, !! subgroups := fct_drop(!! subgroups))
 
