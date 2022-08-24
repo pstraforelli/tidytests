@@ -39,9 +39,8 @@
 #'
 #' summ_df |>
 #'   prep_sigmark(test_res, region, perc, colour_vec, percent = TRUE, vs_rest = FALSE) |>
-#'   ggplot(aes(x = region, y = perc, label = labels, fill = region)) +
+#'   ggplot(aes(x = perc, y = region, label = labels, fill = region)) +
 #'   geom_col() +
-#'   coord_flip() +
 #'   geom_sigmark("fill", colour_vec, hjust = 0) +
 #'   ylim(c(0, 1))
 #'
@@ -54,9 +53,8 @@
 #'
 #' summ_df |>
 #'   prep_sigmark(test_res2, region, perc, colour_vec, percent = TRUE, vs_rest = TRUE) |>
-#'   ggplot(aes(x = region, y = perc, label = labels, fill = region)) +
+#'   ggplot(aes(x = perc, y = region, label = labels, fill = region)) +
 #'   geom_col() +
-#'   coord_flip() +
 #'   geom_sigmark(hjust = 0) +
 #'   ylim(c(0, 1))
 
