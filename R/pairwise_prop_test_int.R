@@ -11,6 +11,7 @@
 #' @importFrom dplyr left_join
 #' @importFrom dplyr transmute
 #' @importFrom dplyr if_else
+#' @importFrom tidyr complete
 
 pairwise_prop_test_int <- function(df, x, subgroups, ...) {
   x <- enquo(x)
@@ -18,6 +19,7 @@ pairwise_prop_test_int <- function(df, x, subgroups, ...) {
 
   prop_df <- df |>
     count(!! subgroups, !! x, name = "counts", .drop = FALSE) |>
+    complete(!! subgroups, !! x, fill = list(counts = 0)) |>
     group_by(!! subgroups) |>
     mutate(percentage = counts / sum(counts),
            n = sum(counts)) |>
@@ -26,6 +28,7 @@ pairwise_prop_test_int <- function(df, x, subgroups, ...) {
 
   df |>
     count(!! x, !! subgroups, name = "incidence", .drop = FALSE) |>
+    complete(!! x, !! subgroups, fill = list(incidence = 0)) |>
     group_by(!! subgroups) |>
     mutate(n = sum(incidence)) |>
     ungroup() |>
