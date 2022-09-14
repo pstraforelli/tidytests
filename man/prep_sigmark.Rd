@@ -34,8 +34,7 @@ mydf <- data.frame(smokers = c(rbinom(100, 1, .8),
                    region = c(rep("A", 100), rep("B", 70), rep("C", 50)))
 test_res <- pairwise_prop_test(mydf, smokers, region)
 
-colour_vec <- c("red", "blue", "green", "orange")
-names(colour_vec) <- LETTERS[1:4]
+colour_vec <- c("A" = "red", "B" = "blue", "C" = "green")
 
 library(dplyr, warn.conflicts = FALSE)
 mydf |>
