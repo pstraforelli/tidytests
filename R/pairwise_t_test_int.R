@@ -2,6 +2,7 @@
 #' @importFrom rlang quo_name
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarize
+#' @importFrom dplyr reframe
 #' @importFrom dplyr n
 #' @importFrom dplyr as_tibble
 #' @importFrom dplyr left_join
@@ -26,7 +27,7 @@ pairwise_t_test_int <- function(df, x, subgroups, ...) {
               n = n(), .groups = "drop_last")
 
   df |>
-    summarize(tidy(pairwise.t.test(!! x, !! subgroups, ...))) |>
+    reframe(tidy(pairwise.t.test(!! x, !! subgroups, ...))) |>
     as_tibble() |>
     left_join(summary_df, by = c("group1" = quo_name(subgroups))) |>
     left_join(summary_df, by = c("group2" = quo_name(subgroups)), suffix = c("_group1", "_group2")) |>

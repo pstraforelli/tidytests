@@ -15,7 +15,8 @@
 #' @importFrom dplyr pull
 #' @importFrom dplyr mutate
 #' @importFrom dplyr arrange
-#' @importFrom purrr map_dfr
+#' @importFrom purrr map
+#' @importFrom purrr list_rbind
 #' @export
 #'
 #' @examples
@@ -51,9 +52,10 @@ pairwise_prop_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
     df |>
       pull(!! subgroups) |>
       levels() |>
-      map_dfr(function(x) df |>
+      map(function(x) df |>
                 mutate(!! subgroups_name := fct_other(!! subgroups, keep = x)) |>
                 pairwise_prop_test_int(!! outcome, !! subgroups)) |>
+      list_rbind() |>
       arrange(!! outcome)
   } else {
     pairwise_prop_test_int(df, !! outcome, !! subgroups)
