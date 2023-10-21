@@ -1,6 +1,6 @@
 Package: tidytests
 Title: A tidy implementation of statistical testing
-Version: 0.1.3
+Version: 0.1.4
 Authors@R: 
     person(given = "Phil",
            family = "Straforelli",

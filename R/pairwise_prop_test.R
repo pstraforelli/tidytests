@@ -49,11 +49,19 @@ pairwise_prop_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
   }
 
   if (vs_rest) {
-    df |>
+    levs <- df |>
       pull(!! subgroups) |>
-      levels() |>
+      levels()
+
+    if ("Other" %in% levs) {
+      other_lev <- "Other2"
+    } else {
+      other_lev <- "Other"
+    }
+
+    levs |>
       map(function(x) df |>
-                mutate(!! subgroups_name := fct_other(!! subgroups, keep = x)) |>
+                mutate(!! subgroups_name := fct_other(!! subgroups, keep = x, other_level = other_lev)) |>
                 pairwise_prop_test_int(!! outcome, !! subgroups)) |>
       list_rbind() |>
       arrange(!! outcome)
