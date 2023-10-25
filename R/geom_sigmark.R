@@ -42,7 +42,7 @@
 #'   ggplot(aes(x = perc, y = region, label = labels, fill = region)) +
 #'   geom_col() +
 #'   geom_sigmark("fill", colour_vec, hjust = 0) +
-#'   ylim(c(0, 1))
+#'   xlim(c(0, 1))
 #'
 #' # Comparing each subgroup to rest of sample
 #'
@@ -56,7 +56,7 @@
 #'   ggplot(aes(x = perc, y = region, label = labels, fill = region)) +
 #'   geom_col() +
 #'   geom_sigmark(hjust = 0) +
-#'   ylim(c(0, 1))
+#'   xlim(c(0, 1))
 
 geom_sigmark <- function(colour_fill = NULL, colours, ...) {
   if (missing(colour_fill)) {

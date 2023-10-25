@@ -4,7 +4,7 @@
 \alias{pairwise_prop_test}
 \title{Pairwise Proportional Tests}
 \usage{
-pairwise_prop_test(df, outcome, subgroups, vs_rest = FALSE, ...)
+pairwise_prop_test(df, outcome, subgroups, vs_rest = FALSE, min_n = 30, ...)
 }
 \arguments{
 \item{df}{A data frame or tibble of raw observations}
@@ -14,6 +14,8 @@ pairwise_prop_test(df, outcome, subgroups, vs_rest = FALSE, ...)
 \item{subgroups}{Grouping vector}
 
 \item{vs_rest}{Logical indicating whether to test each level of a subgroup to the rest of the data}
+
+\item{min_n}{A scalar numeric indicating the minimum sample size to test on. Defaulted to n=30.}
 
 \item{...}{Additional arguments passed on to pairwise.prop.test and prop.test}
 }

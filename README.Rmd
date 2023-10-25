@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 # tidytests
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://www.tidyverse.org/lifecycle/#stable)
 <!-- badges: end -->
 
 The goal of tidytests is to provide a tidy implementation of the output from t-tests and proportional tests.
@@ -102,19 +102,17 @@ Use `geom_sigmark()` as a geom object for your ggplot2 chart.
 
 ```{r geom-sigmark, warning=FALSE}
 library(ggplot2)
-ggplot(mydf_prep, aes(x = region, y = perc, label = labels, fill = region)) +
+ggplot(mydf_prep, aes(x = perc, y = region, label = labels, fill = region)) +
   geom_col() +
-  coord_flip() +
   geom_sigmark("fill", colour_vec, hjust = 0) +
-  ylim(c(0, 1))
+  xlim(c(0, 1))
 
 # Comparing each subgroup to rest of sample:
-ggplot(mydf_prep2, aes(x = region, y = perc, label = labels, fill = region)) +
+ggplot(mydf_prep2, aes(x = perc, y = region, label = labels, fill = region)) +
   geom_col() +
-  coord_flip() +
   geom_sigmark(hjust = 0) +
   scale_fill_manual(values = colour_vec) + 
-  ylim(c(0, 1))
+  xlim(c(0, 1))
 ```
 
 Note that you will see warnings about the encoding of the significance markers. Those can be ignored.

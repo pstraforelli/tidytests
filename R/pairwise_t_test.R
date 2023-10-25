@@ -5,6 +5,7 @@
 #' @param outcome Response vector
 #' @param subgroups Grouping vector
 #' @param vs_rest Logical indicating whether to test each level of a subgroup to the rest of the data
+#' @param min_n A scalar numeric indicating the minimum sample size to test on. Defaulted to n=30.
 #' @param ... Additional arguments passed on to pairwise.t.test and t.test
 #'
 #' @return A tibble with output from pairwise.t.test
@@ -14,6 +15,8 @@
 #' @importFrom rlang abort
 #' @importFrom dplyr pull
 #' @importFrom dplyr mutate
+#' @importFrom dplyr add_count
+#' @importFrom dplyr filter
 #' @importFrom forcats fct_other
 #' @importFrom forcats fct_drop
 #' @importFrom forcats fct_inorder
@@ -24,7 +27,7 @@
 #' @examples
 #' pairwise_t_test(iris, Sepal.Length, Species)
 
-pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
+pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, min_n = 30, ...) {
   outcome <- enquo(outcome)
   subgroups <- enquo(subgroups)
   subgroups_name <- quo_name(subgroups)
@@ -35,7 +38,10 @@ pairwise_t_test <- function(df, outcome, subgroups, vs_rest = FALSE, ...) {
       fct_inorder()
   }
 
-  df <- mutate(df, !! subgroups := fct_drop(!! subgroups))
+  df <- df |>
+    add_count(!! subgroups) |>
+    filter(n >= min_n) |>
+    mutate(!! subgroups := fct_drop(!! subgroups))
 
   levels_check <- df |>
     pull(!! subgroups) |>
