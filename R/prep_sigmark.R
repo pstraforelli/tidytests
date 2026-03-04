@@ -69,10 +69,7 @@ prep_sigmark <- function(df, test_df, subgroups, result, colours = NULL, percent
   }
 
   if (percent) {
-    output |>
-      mutate(temp = percent({{ result }}, accuracy = 1),
-             labels = ifelse(is.na(labels), temp, str_c(temp, labels))) |>
-      select(-temp)
+    mutate(output, labels = ifelse(is.na(labels), percent({{ result }}, accuracy = 1), str_c(percent({{ result }}, accuracy = 1), labels)))
   } else {
     mutate(output, labels = ifelse(is.na(labels), {{ result }}, str_c({{ result }}, labels)))
   }
